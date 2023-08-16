@@ -1,0 +1,16 @@
+- hosts: fortigate00
+  connection: httpapi
+  collections:
+  - fortinet.fortios
+  vars:
+   vdom: "root"
+   ansible_httpapi_use_ssl: yes
+   ansible_httpapi_validate_certs: no
+   ansible_httpapi_port: 443
+  tasks:
+   - name: Configure global attributes.
+     fortios_system_global:
+        vdom:  "{{ vdom }}"
+        access_token: "{{ fortios_access_token }}" #if you prefer access token based authentication, add this line.
+        system_global:
+            hostname: 'fortigate00'
