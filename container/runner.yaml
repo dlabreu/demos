@@ -6,14 +6,14 @@
     - name: Pull the latest container image for node02
       ansible.builtin.shell: |
         podman pull {{ image_dbn }}
-      when: inventory_hostname == "node02"
+      when: ansible_hostname == "node02"
       args:
         warn: false
 
     - name: Pull the latest container image for node01
       ansible.builtin.shell: |
         podman pull {{ image_cpt }}
-      when: inventory_hostname == "node01"
+      when: ansible_hostname == "node01"
       args:
         warn: false
 
@@ -24,12 +24,12 @@
     - name: Deploy the container for node02
       ansible.builtin.shell: |
         podman run -d --name {{ container_name }} -p {{ host_port }}:{{ container_port }} {{ image_dbn }}
-      when: inventory_hostname == "node02"
+      when: ansible_hostname == "node02"
 
     - name: Deploy the container for node01
       ansible.builtin.shell: |
         podman run -d --name {{ container_name }} -p {{ host_port }}:{{ container_port }} {{ image_cpt }}
-      when: inventory_hostname == "node01"
+      when: ansible_hostname == "node01"
 
     - name: Verify the container is running
       ansible.builtin.shell: |
