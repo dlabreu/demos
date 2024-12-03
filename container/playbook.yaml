@@ -1,0 +1,54 @@
+---
+- name: Deploy new app as a Podman container
+  hosts: all 
+  become: yes
+  tasks:
+    - name: Ensure Podman is installed
+      ansible.builtin.yum:
+        name: podman
+        state: present
+
+    - name: Pull the latest container image
+      containers.podman_image:
+        name: "{{ image_dbn }}"
+        state: present
+      when: inventory_hostname == "node02" 
+
+    - name: Pull the latest container image
+      containers.podman_image:
+        name: "{{ image_cpt }}"
+        state: present
+      when: inventory_hostname == "node01"        
+
+    - name: Stop and remove any existing container with the same name
+      containers.podman_container:
+        name: "{{ container_name }}"
+        state: absent
+      ignore_errors: yes
+
+    - name: Deploy the container
+      containers.podman_container:
+        name: "{{ container_name }}"
+        image: "{{ image_dbn }}"
+        state: started
+        ports:
+          - "{{ host_port }}:{{ container_port }}"
+      when: inventory_hostname == "node02"          
+
+
+    - name: Deploy the container
+      containers.podman_container:
+        name: "{{ container_name }}"
+        image: "{{ image_cpt }}"
+        state: started
+        ports:
+          - "{{ host_port }}:{{ container_port }}"
+      when: inventory_hostname == "node02"          
+
+
+    - name: Verify the container is running
+      containers.podman_container:
+        name: "{{ container_name }}"
+        state: started
+        detect_restart: yes
+        restart_policy: always
