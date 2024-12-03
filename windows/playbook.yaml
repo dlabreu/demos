@@ -1,0 +1,26 @@
+---
+- name: Install IIS on Windows
+  hosts: windows
+  tasks:
+    - name: Install IIS
+      win_feature:
+        name: Web-Server
+        state: present
+      register: iis_installation
+
+    - name: Ensure IIS service is running
+      win_service:
+        name: W3SVC
+        state: started
+        start_mode: auto
+      when: iis_installation.changed
+
+    - name: Confirm IIS is installed
+      win_shell: |
+        Get-WindowsFeature | Where-Object { $_.Name -eq "Web-Server" -and $_.Installed }
+      register: iis_status
+      ignore_errors: true
+
+    - name: Debug IIS installation status
+      debug:
+        msg: "IIS installation status: {{ iis_status.stdout_lines }}"
