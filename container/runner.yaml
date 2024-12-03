@@ -7,15 +7,11 @@
       ansible.builtin.shell: |
         podman pull {{ image_dbn }}
       when: ansible_hostname == "node02"
-      args:
-        warn: false
 
     - name: Pull the latest container image for node01
       ansible.builtin.shell: |
         podman pull {{ image_cpt }}
       when: ansible_hostname == "node01"
-      args:
-        warn: false
 
     - name: Stop and remove any existing container
       ansible.builtin.shell: |
