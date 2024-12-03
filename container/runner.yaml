@@ -1,0 +1,43 @@
+---
+- name: Deploy new app as a Podman container
+  hosts: all
+  become: yes
+  tasks:
+    - name: Pull the latest container image for node02
+      ansible.builtin.shell: |
+        podman pull {{ image_dbn }}
+      when: inventory_hostname == "node02"
+      args:
+        warn: false
+
+    - name: Pull the latest container image for node01
+      ansible.builtin.shell: |
+        podman pull {{ image_cpt }}
+      when: inventory_hostname == "node01"
+      args:
+        warn: false
+
+    - name: Stop and remove any existing container
+      ansible.builtin.shell: |
+        podman rm -f {{ container_name }} || true
+
+    - name: Deploy the container for node02
+      ansible.builtin.shell: |
+        podman run -d --name {{ container_name }} -p {{ host_port }}:{{ container_port }} {{ image_dbn }}
+      when: inventory_hostname == "node02"
+
+    - name: Deploy the container for node01
+      ansible.builtin.shell: |
+        podman run -d --name {{ container_name }} -p {{ host_port }}:{{ container_port }} {{ image_cpt }}
+      when: inventory_hostname == "node01"
+
+    - name: Verify the container is running
+      ansible.builtin.shell: |
+        podman ps --filter "name={{ container_name }}" --format "{{ '{{.Names}}' }}"
+      register: container_status
+      changed_when: false
+
+    - name: Check if container is running
+      ansible.builtin.debug:
+        msg: "Container {{ container_name }} is running"
+      when: container_status.stdout == container_name

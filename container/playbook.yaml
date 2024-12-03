@@ -1,13 +1,4 @@
 ---
-- name: Install containers.podman collection
-  hosts: localhost  # This task will run on the local machine where the playbook is executed
-  tasks:
-    - name: Install containers.podman collection
-      ansible.builtin.pip:
-        name: "ansible-collections-containers.podman"
-        state: present
-      become: yes
-
 - name: Deploy new app as a Podman container
   hosts: all 
   become: yes
