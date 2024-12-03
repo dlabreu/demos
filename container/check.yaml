@@ -1,0 +1,12 @@
+---
+- name: List all installed Ansible collections
+  hosts: localhost  # This will run on the local machine where the playbook is executed
+  tasks:
+    - name: List installed collections
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection list
+      register: collections_output
+
+    - name: Show the list of installed collections
+      debug:
+        var: collections_output.stdout
