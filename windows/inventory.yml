@@ -1,0 +1,8 @@
+windows:
+  hosts:
+    win_host:
+      ansible_host: 192.168.22.199
+      ansible_user: admin
+      ansible_password: 1qaz2wsx
+      ansible_connection: winrm
+      ansible_winrm_transport: basic
