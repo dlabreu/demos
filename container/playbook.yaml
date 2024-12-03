@@ -9,13 +9,13 @@
         state: present
 
     - name: Pull the latest container image
-      containers.podman_image:
+      containers.podman.podman_image:
         name: "{{ image_dbn }}"
         state: present
       when: inventory_hostname == "node02" 
 
     - name: Pull the latest container image
-      containers.podman_image:
+      containers.podman.podman_image:
         name: "{{ image_cpt }}"
         state: present
       when: inventory_hostname == "node01"        
