@@ -1,0 +1,46 @@
+---
+- name: Install HTTPD, Deploy Custom Index Page, and Configure Firewall (RHEL/CentOS)
+  hosts: all
+  gather_facts: yes
+  become: yes
+
+  vars:
+      web_package_name: httpd
+      web_service_name: httpd
+      web_docroot: /var/www/html
+
+  tasks:
+      - name: Ensure HTTPD package is installed
+        ansible.builtin.package:
+            name: "{{ web_package_name }}"
+            state: present
+
+      - name: Deploy the custom index.html using Jinja2 template
+        ansible.builtin.template:
+            src: index.html.j2
+            dest: "{{ web_docroot }}/index.html"
+            owner: root
+            group: root
+            mode: "0644"
+        notify:
+            - Restart Web Service
+
+      - name: Ensure web service is running and enabled at boot
+        ansible.builtin.service:
+            name: "{{ web_service_name }}"
+            state: started
+            enabled: yes
+
+      - name: Stop and disable firewalld Service
+        ansible.builtin.service:
+            name: firewalld
+            state: stopped
+            enabled: false
+        when: ansible_facts['os_family'] == "RedHat"
+        ignore_errors: true
+
+  handlers:
+      - name: Restart Web Service
+        ansible.builtin.service:
+            name: "{{ web_service_name }}"
+            state: restarted

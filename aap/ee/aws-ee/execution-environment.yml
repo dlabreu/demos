@@ -1,0 +1,20 @@
+version: 3
+
+images:
+  base_image:
+    name: registry.redhat.io/ansible-automation-platform-25/ee-minimal-rhel8:latest
+
+dependencies:
+  galaxy: requirements.yml
+  python: requirements.txt
+  system:
+    - unzip
+    - curl
+    - git
+    - ca-certificates
+    - which
+
+additional_build_steps:
+  append_final:
+    - COPY install-terraform.sh /tmp/install-terraform.sh
+    - RUN chmod +x /tmp/install-terraform.sh && /tmp/install-terraform.sh

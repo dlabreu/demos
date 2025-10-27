@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <title>Ansible - Server Status</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 0; /* REMOVED default 50px margin that can cause scrolling issues */
+                background-color: #000000;
+                color: #ffffff;
+                padding-top: 20px; /* Add some overall padding at the top */
+            }
+            .container {
+                max-width: 800px;
+                margin: 20px auto; /* Centered with top/bottom margin */
+                background: rgba(40, 40, 40, 0.9);
+                padding: 30px;
+                border-radius: 10px;
+                box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+            }
+            h1 {
+                color: #ffffff;
+                border-bottom: 2px solid #ffffff;
+                padding-bottom: 10px;
+                text-align: center;
+            }
+            .info-box {
+                background-color: #333333;
+                border: 1px solid #ffffff;
+                padding: 15px;
+                margin-top: 20px;
+                border-radius: 5px;
+                color: #ffffff;
+            }
+            strong {
+                color: #ffffff;
+            }
+            .logo {
+                text-align: center;
+                margin-bottom: 20px;
+                padding-top: 20px; /* Ensure the logo is clearly visible at the top */
+            }
+            .logo img {
+                max-width: 200px;
+                height: auto;
+                border: none;
+                padding: 0;
+                background: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="logo">
+            <img
+                src="https://raw.githubusercontent.com/ansible/logos/refs/heads/main/community-usage/correct-use-white.png"
+                alt="Ansible Logo"
+            />
+        </div>
+
+        <div class="container">
+            <h1>Welcome to Ansible Web Server</h1>
+            <p>
+                This page serves as a simple application health check and
+                deployment verification page.
+            </p>
+
+            <div class="info-box">
+                <p>
+                    <strong>Hostname:</strong> {{ ansible_hostname |
+                    default('Hostname not available') }}
+                </p>
+                <p>
+                    <strong>Cloud Provider:</strong>
+                    {% if ansible_ec2_instance_id is defined %} AWS (Amazon Web
+                    Services) {% elif ansible_virtualization_role == 'guest' and
+                    'Microsoft Corporation' in ansible_system_vendor %} Azure
+                    (Microsoft Azure) {% else %} Other/Physical/Unknown ({{
+                    ansible_system_vendor | default('N/A') }}) {% endif %}
+                </p>
+            </div>
+
+            <p>
+                Successfully deployed by terrafiorm and manage via ansible. LIKE
+                A BOSS!!!!
+            </p>
+        </div>
+    </body>
+</html>

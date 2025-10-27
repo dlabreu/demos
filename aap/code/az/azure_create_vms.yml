@@ -1,0 +1,68 @@
+- name: Create Virtual Machines in Azure
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  collections:
+    - azure.azcollection
+
+  vars:
+    resource_group: om-demo-webapp
+    location: southafricanorth
+    vm_name_prefix: omwebapp
+    vm_count: 1
+    vm_size: Standard_D2ls_v5
+    admin_username: azureuser
+    admin_password: "YOUR PASSWORD GOES HERE"
+    image_offer: RHEL
+    image_publisher: RedHat
+    image_sku: "8-lvm-gen2"
+    image_version: latest
+    vnet_name: om-demo-webapp-vnet
+    subnet_name: default
+
+  tasks:
+    - name: Ensure resource group exists
+      azure_rm_resourcegroup:
+        name: "{{ resource_group }}"
+        location: "{{ location }}"
+
+    - name: Create public IPs
+      azure_rm_publicipaddress:
+        name: "{{ vm_name_prefix }}{{ item }}-pip"
+        resource_group: "{{ resource_group }}"
+        allocation_method: Static
+        sku: Standard
+      loop: "{{ range(1, vm_count + 1) | list }}"
+
+    - name: Create NICs for each VM
+      azure_rm_networkinterface:
+        name: "{{ vm_name_prefix }}{{ item }}-nic"
+        resource_group: "{{ resource_group }}"
+        virtual_network: "{{ vnet_name }}"
+        subnet: "{{ subnet_name }}"
+        ip_configurations:
+          - name: ipconfig1
+            primary: true
+            public_ip_address_name: "{{ vm_name_prefix }}{{ item }}-pip"
+      loop: "{{ range(1, vm_count + 1) | list }}"
+
+    - name: Create Azure VMs
+      azure_rm_virtualmachine:
+        resource_group: "{{ resource_group }}"
+        name: "{{ vm_name_prefix }}{{ item }}"
+        vm_size: "{{ vm_size }}"
+        admin_username: "{{ admin_username }}"
+        admin_password: "{{ admin_password }}"
+        network_interface_names:
+          - "{{ vm_name_prefix }}{{ item }}-nic"
+        image:
+          offer: "{{ image_offer }}"
+          publisher: "{{ image_publisher }}"
+          sku: "{{ image_sku }}"
+          version: "{{ image_version }}"
+        os_type: Linux
+        managed_disk_type: Standard_LRS
+        ssh_password_enabled: true
+        public_ip_allocation_method: Static
+        state: present
+      loop: "{{ range(1, vm_count + 1) | list }}"

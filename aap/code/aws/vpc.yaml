@@ -1,0 +1,54 @@
+---
+- name: Terraform Provisioning Wrapper for AWS Infrastructure (VPC Provisioning)
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+      vpc_dir: "/runner/project/aws/vpc"
+      aws_region: "eu-west-1" # Change to your region
+      aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+      aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+
+  tasks:
+      - name: Confirm Terraform directory
+        debug:
+            msg: "Targeting Terraform configuration in directory: '{{ vpc_dir }}'"
+
+      - name: Ensure Terraform directory exists
+        stat:
+            path: "{{ vpc_dir }}"
+        register: vpc_dir_check
+
+      - name: Show directory check result
+        debug:
+            var: vpc_dir_check
+
+      - name: Initialize Terraform
+        community.general.terraform:
+            project_path: "{{ vpc_dir }}"
+            state: present
+            force_init: true
+            overwrite_init: true
+            workspace: default
+            no_color: true
+        environment:
+            AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+            AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+            AWS_DEFAULT_REGION: "{{ aws_region }}"
+        register: vpc_init_result
+
+      - name: Apply Terraform configuration
+        community.general.terraform:
+            project_path: "{{ vpc_dir }}"
+            state: present
+            workspace: default
+            no_color: true
+        environment:
+            AWS_ACCESS_KEY_ID: "{{ aws_access_key }}"
+            AWS_SECRET_ACCESS_KEY: "{{ aws_secret_key }}"
+            AWS_DEFAULT_REGION: "{{ aws_region }}"
+        register: vpc_apply_result
+
+      - name: Show Terraform apply result
+        debug:
+            var: vpc_apply_result

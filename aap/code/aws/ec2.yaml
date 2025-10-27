@@ -1,0 +1,39 @@
+- name: Terraform EC2 Provisioning
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+      terraform_config_path: "/runner/project/aws/ec2"
+
+      # Survey / AAP variables
+      tf_vars:
+          aws_access_key: "{{ lookup('env','AWS_ACCESS_KEY_ID') }}"
+          aws_secret_key: "{{ lookup('env','AWS_SECRET_ACCESS_KEY') }}"
+          aws_region: "{{ region | default('eu-west-1') }}"
+          vpc_id: "{{ vpc_id }}"
+          public_subnet_ids: ["{{ public_subnet_id }}"] # must be a list
+          ami_id: "{{ ami_id }}"
+          instance_type: "{{ instance_type | default('t2.micro') }}"
+          instance_count: "{{ instance_count | default(1) }}"
+          ssh_key_name: "{{ ssh_key_name }}"
+          ssh_user: "{{ ssh_user | default('ec2-user') }}"
+          existing_security_group_id: "{{ existing_security_group_id }}"
+
+  tasks:
+      - name: Debug Terraform variables
+        ansible.builtin.debug:
+            var: tf_vars
+
+      - name: 01 - Initialize Terraform
+        community.general.terraform:
+            project_path: "{{ terraform_config_path }}"
+            force_init: true
+            variables: "{{ tf_vars }}"
+            complex_vars: true
+
+      - name: 02 - Apply Terraform
+        community.general.terraform:
+            project_path: "{{ terraform_config_path }}"
+            state: present
+            variables: "{{ tf_vars }}"
+            complex_vars: true

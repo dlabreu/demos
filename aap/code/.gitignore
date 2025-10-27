@@ -1,0 +1,78 @@
+### Terraform ###
+# -----------------------------------------------
+# Ignore local state files and backups
+# These files contain sensitive data and are not meant for version control.
+# Remote state is the recommended approach for collaboration.
+*.tfstate
+*.tfstate.*
+.terraform/terraform.tfstate.backup
+
+# Ignore the .terraform directory and its contents
+# This directory holds downloaded provider plugins and modules.
+.terraform/
+
+# Ignore provider and module lock files.
+# While including `terraform.lock.hcl` is best practice for team collaboration,
+# it can be ignored for personal, non-collaborative projects.
+# For team projects, removing this line is recommended to ensure everyone
+# uses the same dependency versions.
+.terraform.lock.hcl
+
+# Ignore variable definition files containing sensitive data
+# Store and manage secrets outside of version control.
+*.tfvars
+*.tfvars.json
+
+# Ignore crash log files
+crash.log
+crash.*.log
+
+# Ignore override files
+# These files are often for local development changes.
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore terraform CLI configuration files
+.terraformrc
+terraform.rc
+
+
+### Ansible ###
+# -----------------------------------------------
+# Ignore temporary Ansible files
+# These are created during playbook execution.
+*.retry
+
+# Ignore encrypted vault files
+# Use a vault password file or environment variable for secrets.
+# Example: If you name your vaults `secrets.yml` and `group_vars/webservers/vault.yml`.
+secrets.yml
+group_vars/**/vault.yml
+
+# Ignore dynamically generated inventory files
+# If you are generating inventories from Terraform output, or elsewhere.
+inventory-generated/
+
+# Ignore logs created by Ansible
+*.log
+
+# Ignore downloaded roles from Ansible Galaxy
+# If you manage roles with a `requirements.yml` file, the roles will be downloaded
+# into a specific directory, such as `roles/`. Add this directory to your ignore file.
+roles/
+
+
+### Common IDE and OS files ###
+# -----------------------------------------------
+# Ignore common files created by various editors and operating systems
+.DS_Store
+.vscode/
+.idea/
+*~
+*.swp
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
