@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phonebook-app
+  labels:
+    app: phonebook
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: phonebook
+  template:
+    metadata:
+      labels:
+        app: phonebook
+    spec:
+      containers:
+        - name: phonebook-container
+          image: <your-image-registry-url>/phonebook:latest # Update with your image path
+          ports:
+            - containerPort: 3001
+          env:
+            # DB_HOST points to the internal Service name of your VM
+            - name: DB_HOST
+              value: "postgres-vm-service"
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: "phonebook"
+            - name: DB_USER
+              value: "dbuser"
+            # Best practice: use a Secret for the password
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-db-secret
+                  key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: phonebook-service
+spec:
+  selector:
+    app: phonebook
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3001
+  type: ClusterIP
