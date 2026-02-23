@@ -1,0 +1,10 @@
+schemaVersion: 2.2.0
+metadata:
+  name: my-ubi-sample
+components:
+  - name: ubi-runtime
+    container:
+      # This is the "Approved" image you want them to use
+      image: registry.access.redhat.com/ubi9/ubi:latest
+      memoryLimit: 2Gi
+      mountSources: true
