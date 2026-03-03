@@ -1,0 +1,47 @@
+apiVersion: policy.open-cluster-management.io/v1
+kind: Policy
+metadata:
+  name: policy-mongodb-operator
+  namespace: open-cluster-management-global-set
+spec:
+  remediationAction: enforce
+  disabled: false
+  policy-templates:
+    - objectDefinition:
+        apiVersion: policy.open-cluster-management.io/v1
+        kind: ConfigurationPolicy
+        metadata:
+          name: mongodb-operator-config
+        spec:
+          remediationAction: enforce
+          severity: high
+          object-templates:
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: v1
+                kind: Namespace
+                metadata:
+                  name: mongodb
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: operators.coreos.com/v1
+                kind: OperatorGroup
+                metadata:
+                  name: mongodb-operator-group
+                  namespace: mongodb
+                spec:
+                  targetNamespaces:
+                    - mongodb
+            - complianceType: musthave
+              objectDefinition:
+                apiVersion: operators.coreos.com/v1alpha1
+                kind: Subscription
+                metadata:
+                  name: mongodb-kubernetes-operator
+                  namespace: mongodb
+                spec:
+                  channel: stable
+                  installPlanApproval: Automatic
+                  name: mongodb-kubernetes-operator
+                  source: community-operators
+                  sourceNamespace: openshift-marketplace
