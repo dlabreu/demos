@@ -4,7 +4,7 @@ metadata:
   name: binding-mongodb-operator
   namespace: open-cluster-management-global-set
 placementRef:
-  name: placement-mongodb-operator
+  name: mongodb-operator-deploy-placement
   apiGroup: cluster.open-cluster-management.io
   kind: Placement
 subjects:
