@@ -1,12 +1,12 @@
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-  name: mongodb-enterprise
+  name: mongodb-community
   namespace: mongodb-operator
 spec:
   channel: stable
   installPlanApproval: Automatic
-  name: mongodb-community-operator
+  name: mongodb-operator
   source: community-operators
   sourceNamespace: openshift-marketplace
 ---

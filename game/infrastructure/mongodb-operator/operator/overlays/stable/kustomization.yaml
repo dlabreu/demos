@@ -5,4 +5,4 @@ resources:
   - operator-subscription.yaml
 
 commonLabels:
-  app: mongodb-operator
+  app: mongodb-community-operator
