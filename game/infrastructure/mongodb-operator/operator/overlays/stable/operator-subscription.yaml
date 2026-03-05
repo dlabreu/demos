@@ -6,7 +6,7 @@ metadata:
 spec:
   channel: stable
   installPlanApproval: Automatic
-  name: mongodb-enterprise
+  name: mongodb-community-operator
   source: community-operators
   sourceNamespace: openshift-marketplace
 ---
