@@ -1,0 +1,65 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+    name: pacman
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: pacman
+    namespace: pacman
+    labels:
+        app: pacman
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            app: pacman
+    template:
+        metadata:
+            labels:
+                app: pacman
+        spec:
+            containers:
+                - name: pacman
+                  image: "quay.io/dabreu/demo:pacman-atlas-fixed"
+                  imagePullPolicy: Always
+                  ports:
+                      - containerPort: 8080
+                        protocol: TCP
+                  env:
+                      - name: MONGODB_URI
+                        valueFrom:
+                            secretKeyRef:
+                                name: mongodb-uri
+                                key: uri
+                  resources: {}
+                  terminationMessagePath: /dev/termination-log
+                  terminationMessagePolicy: File
+            restartPolicy: Always
+            dnsPolicy: ClusterFirst
+            terminationGracePeriodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: pacman
+    namespace: pacman
+spec:
+    ports:
+        - port: 8080
+          targetPort: 8080
+    selector:
+        app: pacman
+---
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+    name: pacman
+    namespace: pacman
+spec:
+    to:
+        kind: Service
+        name: pacman
+    port:
+        targetPort: 8080
